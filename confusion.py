@@ -4,6 +4,7 @@ import re
 import nltk
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics import confusion_matrix
 
 nltk.download('stopwords')
 nltk.download('wordnet')
@@ -16,8 +17,6 @@ lemmatizer = WordNetLemmatizer()
 
 # Get the set of stopwords
 stopwords_set = set(stopwords.words('english'))
-
-import numpy as np
 
 # Text cleaning and preprocessing using NLTK
 def preprocess_text(text):
@@ -38,14 +37,13 @@ def preprocess_text(text):
         preprocessed_text = ' '.join(tokens)
     else:
         preprocessed_text = ''  # Return empty string for np.nan values
-    
+
     return preprocessed_text
 
 
 # Load the preprocessed data
 train_df = pd.read_csv(r'C:\Users\ghana\Desktop\sentiment\SentimentAnalysisData\preprocessed_training_data.csv')
 test_df = pd.read_csv(r'C:\Users\ghana\Desktop\sentiment\SentimentAnalysisData\preprocessed_test_data.csv')
-
 
 # Initialize the vectorizer
 vectorizer = TfidfVectorizer()
@@ -56,27 +54,24 @@ preprocessed_train_text = train_df['preprocessed_text'].apply(preprocess_text)
 # Fit the vectorizer on the preprocessed training data
 vectorizer.fit(preprocessed_train_text)
 
-def predict_sentiment(comment):
-    # Preprocess the comment
-    preprocessed_text = preprocess_text(comment)
+# Preprocess the test data
+preprocessed_test_text = test_df['preprocessed_text'].apply(preprocess_text)
 
-    # Vectorize the preprocessed text
-    vector = vectorizer.transform([preprocessed_text])
+# Vectorize the preprocessed test data
+test_vectors = vectorizer.transform(preprocessed_test_text)
 
-    # Load the trained model
-    model = MultinomialNB()
-    model.fit(vectorizer.transform(preprocessed_train_text), train_df['target'])
+# Load the trained model
+model = MultinomialNB()
+model.fit(vectorizer.transform(preprocessed_train_text), train_df['target'])
 
-    # Predict the sentiment
-    sentiment = model.predict(vector)
+# Predict the sentiment for test data
+predicted_sentiments = model.predict(test_vectors)
 
-    return sentiment[0]
+# Get the true sentiments from test data
+true_sentiments = test_df['target']
 
-# Get the comment from command-line argument
-comment = sys.argv[1]
+# Build the confusion matrix
+cm = confusion_matrix(true_sentiments, predicted_sentiments)
 
-# Predict the sentiment
-predicted_sentiment = predict_sentiment(comment)
-
-# Print the predicted sentiment
-print(predicted_sentiment)
+# Print the confusion matrix
+print(cm)

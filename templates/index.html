@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sentiment Analysis</title>
+    <link rel="stylesheet" href='/static/style.css'>
+    
+    <style>
+        .positive {
+            color: green;
+        }
+        
+        .negative {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sentiment Analysis</h1>
+    <form action="{{ url_for('home') }}" method="post">
+        <label for="comment">Enter your text:</label><br>
+        <textarea id="comment" name="comment" rows="4" cols="50"></textarea><br>
+        <input type="submit" value="Submit">
+    </form>
+    
+    {% if comment and sentiment %}
+        <h2>Result:</h2>
+        <p><strong>Text:</strong> {{ comment }}</p>
+        
+        {% if sentiment == "Positive" %}
+            <p class="positive"><strong>Sentiment:</strong> {{ sentiment }}</p>
+        {% elif sentiment == "Negative" %}
+            <p class="negative"><strong>Sentiment:</strong> {{ sentiment }}</p>
+        {% else %}
+            <p><strong>Sentiment:</strong> {{ sentiment }}</p>
+        {% endif %}
+    {% endif %}
+</body>
+</html>

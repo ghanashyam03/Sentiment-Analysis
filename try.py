@@ -57,6 +57,6 @@ y_pred = model.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)
 print("Model Accuracy:", accuracy)
 
-input_text = "shit it's awesome"
+input_text = "oh cool!! "
 predicted_sentiment = predict_sentiment(input_text)
 print("Predicted Sentiment:", predicted_sentiment)
